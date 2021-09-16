@@ -19,7 +19,7 @@ public:
 
     static int zdeflate(FILE *source, FILE *dest,
         Filter filter = nullptr, int level = Z_DEFAULT_COMPRESSION);
-    static int zinflate(FILE *source, FILE *dest);
+    static int zinflate(FILE *source, FILE *dest, Filter filter = nullptr);
     static void reportZErr(int ret);
 
     static bool compressFile(

@@ -7,6 +7,7 @@
 
 #include "Options.h"
 #include "lib/ZCompress.h"
+#include "filter/FlipInsn.h"
 
 int main(int argc, char* argv[])
 {
@@ -19,7 +20,9 @@ int main(int argc, char* argv[])
     }
 
     ZCompress z;
-    if (!z.decompressFile(options.inputFileName, options.outputFileName)) {
+    bool ok = z.decompressFile(options.inputFileName,
+        options.outputFileName, FlipInsn::backward);
+    if (!ok) {
         return EXIT_FAILURE;
     }
 

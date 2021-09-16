@@ -47,11 +47,11 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #include_directories(${TACHY_TOOLCHAIN_HOME}/include)
 #link_directories(${TACHY_TOOLCHAIN_HOME}/lib)
 
-#enable_testing()
+enable_testing()
 
 add_subdirectory(xpress)
 add_subdirectory(xpand)
-#add_subdirectory(test)
+add_subdirectory(test)
 #add_subdirectory(doc)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")

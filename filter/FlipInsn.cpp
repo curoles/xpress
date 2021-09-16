@@ -19,22 +19,48 @@ unsigned char get_bit(unsigned char val, unsigned int pos) {
 
 bool FlipInsn::forward(void*, uint8_t* buf, unsigned int size)
 {
-    unsigned char tmp[32];
+    unsigned char tmp[GROUP_SIZE];
 
-    unsigned int vsize = size / 32;
-    for (unsigned int i = 0; i < vsize; ++i) {
+    unsigned int nr_groups = size / GROUP_SIZE;
+    for (unsigned int group = 0; group < nr_groups; ++group) {
 
         std::memset(tmp, 0, sizeof(tmp));
+        unsigned int buf_offset = group*GROUP_SIZE;
 
         for (unsigned int k = 0; k < 4; ++k) {
             for (unsigned int j = 0; j < 8; ++j) {
                 for (unsigned int bit_pos = 0; bit_pos < 8; ++bit_pos) {
-                    set_bit(tmp[k*8 + j], bit_pos, get_bit(buf[bit_pos*4 + k], j));
+                    set_bit(tmp[k*8 + j], bit_pos, get_bit(buf[buf_offset + bit_pos*4 + k], j));
                 }
             }
         }
 
-        std::memcpy(&buf[i*32], tmp, sizeof(tmp));
+        std::memcpy(&buf[buf_offset], tmp, sizeof(tmp));
+    }
+
+    return true;
+}
+
+bool FlipInsn::backward(void*, uint8_t* buf, unsigned int size)
+{
+    unsigned char tmp[GROUP_SIZE];
+
+    unsigned int nr_groups = size / GROUP_SIZE;
+    for (unsigned int group = 0; group < nr_groups; ++group) {
+
+        std::memset(tmp, 0, sizeof(tmp));
+        unsigned int buf_offset = group*GROUP_SIZE;
+
+        for (unsigned int k = 0; k < 4; ++k) {
+            for (unsigned int j = 0; j < 8; ++j) {
+                for (unsigned int bit_pos = 0; bit_pos < 8; ++bit_pos) {
+                    //set_bit(tmp[k*8 + j], bit_pos, get_bit(buf[bit_pos*4 + k], j));
+                    set_bit(tmp[bit_pos*4 + k], j, get_bit(buf[buf_offset + k*8 + j], bit_pos));
+                }
+            }
+        }
+
+        std::memcpy(&buf[buf_offset], tmp, sizeof(tmp));
     }
 
     return true;

@@ -2,6 +2,7 @@ set(XPAND_SRC_FILES
     xpand.cpp
     Options.cpp
     ${XPRESS_SOURCE_DIR}/lib/ZCompress.cpp
+    ${XPRESS_SOURCE_DIR}/filter/FlipInsn.cpp
 )
 
 add_executable(xpand ${XPAND_SRC_FILES})

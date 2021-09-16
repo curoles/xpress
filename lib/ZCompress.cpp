@@ -63,7 +63,7 @@ int ZCompress::zdeflate(
         strm.next_in = in;
 
         if (filter) {
-            filter(nullptr/*FIXME*/, in, CHUNK_SIZE);
+            filter(nullptr, in, CHUNK_SIZE);
         }
 
         /* run deflate() on input until output buffer not full, finish
@@ -96,7 +96,11 @@ int ZCompress::zdeflate(
    invalid or incomplete, Z_VERSION_ERROR if the version of zlib.h and
    the version of the library linked do not match, or Z_ERRNO if there
    is an error reading or writing the files. */
-int ZCompress::zinflate(FILE *source, FILE *dest)
+int ZCompress::zinflate(
+    FILE *source,
+    FILE *dest,
+    ZCompress::Filter filter
+)
 {
     int ret;
     unsigned have;
@@ -142,6 +146,9 @@ int ZCompress::zinflate(FILE *source, FILE *dest)
             case Z_MEM_ERROR:
                 (void)inflateEnd(&strm);
                 return ret;
+            }
+            if (filter) {
+                filter(nullptr, out, CHUNK_SIZE);
             }
             have = CHUNK_SIZE - strm.avail_out;
             if (fwrite(out, 1, have, dest) != have || ferror(dest)) {
@@ -213,7 +220,7 @@ bool ZCompress::compressFile(
 bool ZCompress::decompressFile(
     const std::string& inFileName,
     const std::string& outFileName,
-    ZCompress::Filter /*filter*/
+    ZCompress::Filter filter
 )
 {
     FILE* infile = ::fopen(inFileName.c_str(), "r");
@@ -226,7 +233,7 @@ bool ZCompress::decompressFile(
         return false;
     }
 
-    int ret = zinflate(infile, outfile);
+    int ret = zinflate(infile, outfile, filter);
     if (ret != Z_OK) {
         reportZErr(ret);
     }
