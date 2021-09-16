@@ -27,7 +27,12 @@
    level is supplied, Z_VERSION_ERROR if the version of zlib.h and the
    version of the library linked do not match, or Z_ERRNO if there is
    an error reading or writing the files. */
-int ZCompress::zdeflate(FILE *source, FILE *dest, int level)
+int ZCompress::zdeflate(
+    FILE *source,
+    FILE *dest,
+    ZCompress::Filter filter,
+    int level
+)
 {
     int ret, flush;
     unsigned have;
@@ -56,6 +61,10 @@ int ZCompress::zdeflate(FILE *source, FILE *dest, int level)
         }
         flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
         strm.next_in = in;
+
+        if (filter) {
+            filter(nullptr/*FIXME*/, in, CHUNK_SIZE);
+        }
 
         /* run deflate() on input until output buffer not full, finish
            compression if all of source has been read in */
@@ -174,7 +183,11 @@ void ZCompress::reportZErr(int ret)
     }
 }
 
-bool ZCompress::compressFile(const std::string& inFileName, const std::string& outFileName)
+bool ZCompress::compressFile(
+    const std::string& inFileName,
+    const std::string& outFileName,
+    ZCompress::Filter filter
+)
 {
     FILE* infile = ::fopen(inFileName.c_str(), "r");
     if (infile == nullptr) {
@@ -186,7 +199,7 @@ bool ZCompress::compressFile(const std::string& inFileName, const std::string& o
         return false;
     }
 
-    int ret = zdeflate(infile, outfile);
+    int ret = zdeflate(infile, outfile, filter);
     if (ret != Z_OK) {
         reportZErr(ret);
     }
@@ -197,7 +210,11 @@ bool ZCompress::compressFile(const std::string& inFileName, const std::string& o
     return ret == Z_OK;
 }
 
-bool ZCompress::decompressFile(const std::string& inFileName, const std::string& outFileName)
+bool ZCompress::decompressFile(
+    const std::string& inFileName,
+    const std::string& outFileName,
+    ZCompress::Filter /*filter*/
+)
 {
     FILE* infile = ::fopen(inFileName.c_str(), "r");
     if (infile == nullptr) {

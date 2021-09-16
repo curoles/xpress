@@ -14,10 +14,23 @@ class ZCompress
 public:
     static const unsigned int CHUNK_SIZE = 2*1024*1024;
 public:
-    static int zdeflate(FILE *source, FILE *dest, int level = Z_DEFAULT_COMPRESSION);
+
+    using Filter = bool (*)(void*, unsigned char*, unsigned);
+
+    static int zdeflate(FILE *source, FILE *dest,
+        Filter filter = nullptr, int level = Z_DEFAULT_COMPRESSION);
     static int zinflate(FILE *source, FILE *dest);
     static void reportZErr(int ret);
 
-    static bool compressFile(const std::string& inFileName, const std::string& outFileName);
-    static bool decompressFile(const std::string& inFileName, const std::string& outFileName);
+    static bool compressFile(
+        const std::string& inFileName,
+        const std::string& outFileName,
+        Filter filter = nullptr
+    );
+
+    static bool decompressFile(
+        const std::string& inFileName,
+        const std::string& outFileName,
+        Filter filter = nullptr
+        );
 };

@@ -8,6 +8,8 @@
 #include "Options.h"
 #include "lib/ZCompress.h"
 
+#include "filter/FlipInsn.h"
+
 int main(int argc, char* argv[])
 {
     // Command line options
@@ -19,7 +21,10 @@ int main(int argc, char* argv[])
     }
 
     ZCompress z;
-    if (!z.compressFile(options.inputFileName, options.outputFileName)) {
+    bool ok = z.compressFile(options.inputFileName,
+        options.outputFileName, FlipInsn::forward);
+
+    if (!ok) {
         return EXIT_FAILURE;
     }
 

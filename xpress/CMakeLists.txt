@@ -2,6 +2,7 @@ set(XPRESS_SRC_FILES
     xpress.cpp
     Options.cpp
     ${XPRESS_SOURCE_DIR}/lib/ZCompress.cpp
+    ${XPRESS_SOURCE_DIR}/filter/FlipInsn.cpp
 )
 
 add_executable(xpress ${XPRESS_SRC_FILES})
