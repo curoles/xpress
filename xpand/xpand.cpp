@@ -1,5 +1,5 @@
 /**@file
- * @brief     XPRESS compressor `main` entry.
+ * @brief     XPAND decompressor `main` entry.
  * @author    Igor Lesik 2021
  * @copyright Igor Lesik 2021
  */
@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     }
 
     ZCompress z;
-    if (!z.compressFile(options.inputFileName, options.outputFileName)) {
+    if (!z.decompressFile(options.inputFileName, options.outputFileName)) {
         return EXIT_FAILURE;
     }
 
